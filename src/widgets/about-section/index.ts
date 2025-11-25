@@ -1,0 +1,10 @@
+export { default as AboutSection } from "./ui/AboutSection";
+export { default as AboutImage } from "./ui/AboutImage";
+export { default as RightSide } from "./ui/RightSide";
+export { default as LeftSide } from "./ui/LeftSide";
+export { default as HighLight } from "./ui/HighLight";
+export { default as Box } from "./ui/Box";
+export { default as Feature } from "./ui/Feature";
+export { features } from "./lib/features-lib";
+export type { FeatureType } from "./types/feature-type";
+export type { FeatureProps } from "./types/feature-props";
