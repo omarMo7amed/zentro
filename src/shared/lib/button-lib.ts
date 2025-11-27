@@ -1,4 +1,4 @@
-import { ButtonProps } from "@/shared/types/ui";
+import { ButtonProps } from "@/shared/types";
 
 export function getVariantClasses(variant: ButtonProps["variant"]) {
   switch (variant) {

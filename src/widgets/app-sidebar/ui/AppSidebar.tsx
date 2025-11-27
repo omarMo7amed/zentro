@@ -13,7 +13,7 @@ export default function AppSidebar() {
     <aside
       className={cn(
         "bg-surface border-r border-border",
-        "flex flex-col h-full  transition-all duration-200 ease-in-out",
+        "flex flex-col h-full transition-all duration-200 ease-in-out",
         isOpen ? "w-64" : "w-16"
       )}
     >

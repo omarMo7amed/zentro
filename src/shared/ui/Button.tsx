@@ -1,5 +1,5 @@
 import { getVariantClasses, getRingClasses } from "@/shared/lib/button-lib";
-import { ButtonProps } from "@/shared/types/ui";
+import { ButtonProps } from "@/shared/types";
 import { cn } from "@/shared/lib";
 
 export default function Button({
