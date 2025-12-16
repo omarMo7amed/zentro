@@ -287,3 +287,20 @@
 * {
   box-sizing: border-box;
 }
+
+.EmojiPickerReact.epr-dark-theme {
+  --epr-bg-color: var(--color-surface);
+  --epr-hover-bg-color: var(--color-surface-hover);
+  --epr-category-label-bg-color: var(--color-surface);
+  --epr-category-label-color: var(--color-text-primary);
+  --epr-category-navigation-bg-color: var(--color-surface-hover);
+  --epr-text-color: var(--color-text-primary);
+  --epr-picker-border-color: var(--color-border);
+  --epr-picker-icon-color: var(--color-primary);
+
+  --epr-search-bg-color: var(--color-surface);
+  --epr-search-input-bg-color: var(--color-input);
+  --epr-search-input-bg-color-active: var(--color-input);
+  --epr-search-input-border-color: var(--color-border);
+  --epr-highlight-color: var(--color-primary);
+}

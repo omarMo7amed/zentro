@@ -1,4 +1,5 @@
-import type { Chat, Message } from "@/shared/types";
+import type { Chat } from "@/entities/chat";
+import type { MessageType } from "@/entities/message";
 
 export const fetchChats = async (): Promise<Chat[]> => {
   const response = await fetch("/api/mock/chats", {
@@ -12,15 +13,20 @@ export const fetchChats = async (): Promise<Chat[]> => {
   return response.json();
 };
 
-export const fetchMessagesByChatId = async (
-  chatId: number
-): Promise<Message[]> => {
+export const sendMessage = async (
+  chatId: number,
+  content: string
+): Promise<MessageType> => {
   const response = await fetch(`/api/mock/chats/${chatId}/messages`, {
-    cache: "no-store",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ content }),
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch messages for chat ${chatId}`);
+    throw new Error("Failed to send message");
   }
 
   return response.json();

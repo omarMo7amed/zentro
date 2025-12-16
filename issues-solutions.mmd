@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Database
+
+    User->>Frontend: 1. Send message
+    Frontend->>Frontend: 2. Virtualizer & CSS transitions animate reorder
+    Frontend->>Backend: Send message via Socket.IO
+    Backend->>Database: 3. Update chat's lastMessageAt
+    Backend->>Database: 4. Fetch all chats
+    Database-->>Backend: Return updated chats
+    Backend->>Backend: 5. Find and emit ONLY updated chat
+    Backend->>Frontend: 6. Socket event: chat-updated
+    Note over Frontend: 7. Frontend already updated optimistically<br/>(No visual change)

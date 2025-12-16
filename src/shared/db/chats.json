@@ -1,0 +1,101 @@
+[
+  {
+    "id": 0,
+    "name": "Design Team",
+    "lastMessage": "ewghrewrg",
+    "lastMessageAt": "2025-12-15T19:10:36.439Z",
+    "unread": 0,
+    "online": true,
+    "time": "Just now"
+  },
+  {
+    "id": 1,
+    "name": "Sarah Chen",
+    "lastMessage": "werfq",
+    "lastMessageAt": "2025-12-15T18:35:08.107Z",
+    "unread": 0,
+    "online": true,
+    "time": "Just now"
+  },
+  {
+    "id": 2,
+    "name": "Dev Team",
+    "lastMessage": "OMAR",
+    "lastMessageAt": "2025-12-06T11:25:51.205Z",
+    "unread": 0,
+    "online": false
+  },
+  {
+    "id": 3,
+    "name": "Mike Ross",
+    "lastMessage": "omar",
+    "lastMessageAt": "2025-12-15T18:33:45.932Z",
+    "unread": 0,
+    "online": true,
+    "time": "Just now"
+  },
+  {
+    "id": 4,
+    "name": "John Doe",
+    "lastMessage": "hhf",
+    "lastMessageAt": "2025-12-15T18:35:23.017Z",
+    "unread": 0,
+    "online": false
+  },
+  {
+    "id": 5,
+    "name": "John Doe",
+    "lastMessage": "jmn",
+    "lastMessageAt": "2025-12-15T18:46:44.448Z",
+    "unread": 0,
+    "online": false
+  },
+  {
+    "id": 6,
+    "name": "John Doe",
+    "lastMessage": "dfghdf",
+    "lastMessageAt": "2025-12-15T17:19:29.697Z",
+    "unread": 0,
+    "online": false
+  },
+  {
+    "id": 7,
+    "name": "John Doe",
+    "lastMessage": "gsagvabvas",
+    "lastMessageAt": "2025-12-15T18:04:52.609Z",
+    "unread": 0,
+    "online": false
+  },
+  {
+    "id": 8,
+    "name": "John Doe",
+    "lastMessage": "Hello, how are you?",
+    "lastMessageAt": "2023-11-27T06:00:00.000Z",
+    "unread": 0,
+    "online": false
+  },
+  {
+    "id": 9,
+    "name": "John Doe",
+    "lastMessage": "Hello, how are you?",
+    "lastMessageAt": "2023-11-26T05:00:00.000Z",
+    "unread": 0,
+    "online": false
+  },
+  {
+    "id": 10,
+    "name": "John Doe",
+    "lastMessage": "Hello, how are you?",
+    "lastMessageAt": "2023-11-25T04:00:00.000Z",
+    "unread": 0,
+    "online": false
+  },
+  {
+    "id": 11,
+    "name": "John Doe",
+    "lastMessage": "Hello, how are you?",
+    "lastMessageAt": "2023-11-24T03:00:00.000Z",
+    "unread": 0,
+    "online": false
+  }
+]

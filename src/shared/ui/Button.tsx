@@ -1,8 +1,8 @@
-import { getVariantClasses, getRingClasses } from "@/shared/lib/button-lib";
-import { ButtonProps } from "@/shared/types";
+import { getVariantClasses, getRingClasses } from "@/shared/lib/getButtonClass";
 import { cn } from "@/shared/lib";
+import { ButtonProps } from "../types";
 
-export default function Button({
+export function Button({
   children,
   variant = "primary",
   onClick,

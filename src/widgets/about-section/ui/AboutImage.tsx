@@ -9,7 +9,8 @@ export default function AboutImage({ activeIndex }: { activeIndex: number }) {
         <div
           key={index}
           className={cn(
-            "absolute inset-0 transition-opacity duration-700",
+            "absolute inset-0",
+            "transition-opacity duration-700",
             activeIndex === index ? "opacity-100" : "opacity-0"
           )}
         >

@@ -1,12 +1,14 @@
+import { ChatList, ChatListProps } from "@/widgets/chat-list";
 import { AddFriend } from "@/features/add-friend";
 import { cn } from "@/shared/lib";
-import ChatList from "./ChatList";
-import { ChatListProps } from "../types";
 
 export default function ChatListSidebar({
   chats,
   selectedChatId,
   onChatSelect,
+  hasMore,
+  isLoading,
+  onLoadMore,
 }: ChatListProps) {
   return (
     <div
@@ -20,6 +22,9 @@ export default function ChatListSidebar({
         chats={chats}
         selectedChatId={selectedChatId}
         onChatSelect={onChatSelect}
+        hasMore={hasMore}
+        isLoading={isLoading}
+        onLoadMore={onLoadMore}
       />
 
       <AddFriend />

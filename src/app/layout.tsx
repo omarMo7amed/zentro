@@ -34,6 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
+        style={{}}
         className={`${inter.variable} ${jetbrainsMono.variable} ${orbitron.variable}`}
       >
         {children}

@@ -1,0 +1,201 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useFullscreen } from "./hooks/useFullscreen";
+// Removed unused lucide-react icons
+import { CallHeader } from "./CallHeader";
+import { CallVideoArea } from "./CallVideoArea";
+import { CallControls } from "./CallControls";
+import { CallChatPanel } from "./CallChatPanel";
+import { useCall } from "../model/callContext";
+import { cn } from "@/shared";
+
+interface EmbeddedCallScreenProps {
+  onToggleChat?: () => void;
+  showChat?: boolean;
+}
+
+export function EmbeddedCallScreen({
+  onToggleChat,
+  showChat = false,
+}: EmbeddedCallScreenProps) {
+  const { callState, endCall, toggleMute, toggleCamera, toggleScreenShare } =
+    useCall();
+
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [duration, setDuration] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [controlsHidden, setControlsHidden] = useState(false);
+  const [internalShowChat, setInternalShowChat] = useState(false);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Controls are visible when not fullscreen, or when controlsHidden is false
+  const {
+    ref: containerRef,
+    isFullscreen,
+    setIsFullscreen,
+    handleFullscreen,
+  } = useFullscreen<HTMLDivElement>();
+  // Use internal state if no external control
+  const isChatVisible = onToggleChat ? showChat : internalShowChat;
+  const handleToggleChat =
+    onToggleChat || (() => setInternalShowChat(!internalShowChat));
+
+  // Update local video stream: use callState.localStream if present, else get webcam for demo
+  useEffect(() => {
+    if (!localVideoRef.current) return;
+    if (callState.localStream) {
+      localVideoRef.current.srcObject = callState.localStream;
+      return;
+    }
+    // For demo: get webcam if not in call
+    navigator.mediaDevices
+      .getUserMedia({ video: false, audio: false })
+      .then((stream) => {
+        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+      })
+      .catch(() => {});
+  }, [callState.localStream]);
+
+  // Update remote video stream
+  useEffect(() => {
+    if (remoteVideoRef.current && callState.remoteStream) {
+      remoteVideoRef.current.srcObject = callState.remoteStream;
+    }
+  }, [callState.remoteStream]);
+
+  // Duration timer
+  useEffect(() => {
+    if (callState.status !== "connected" || !callState.startTime) return;
+
+    const interval = setInterval(() => {
+      const elapsed = Math.floor(
+        (Date.now() - callState.startTime!.getTime()) / 1000
+      );
+      setDuration(elapsed);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [callState.status, callState.startTime]);
+
+  // Auto-hide controls (only in fullscreen)
+  useEffect(() => {
+    // Reset hidden state when exiting fullscreen
+    if (!isFullscreen) {
+      // Use a microtask to avoid synchronous setState warning
+      queueMicrotask(() => setControlsHidden(false));
+      return;
+    }
+
+    const handleMouseMove = () => {
+      setControlsHidden(false);
+
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+
+      controlsTimeoutRef.current = setTimeout(() => {
+        if (callState.status === "connected" && isFullscreen) {
+          setControlsHidden(true);
+        }
+      }, 3000);
+    };
+
+    // Trigger initial show
+    handleMouseMove();
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+    };
+  }, [callState.status, isFullscreen]);
+
+  // Toggle fullscreen
+  const handleFullscreen = async () => {
+    if (!containerRef.current) return;
+
+    try {
+      if (!document.fullscreenElement) {
+        await containerRef.current.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch (err) {
+      console.error("Fullscreen error:", err);
+    }
+  };
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  // if (callState.status !== "connected" && callState.status !== "connecting") {
+  //   return null;
+  // }
+
+  const isVideoCall = callState.type === "video";
+  const participantName =
+    callState.caller?.name || callState.recipient?.name || "Unknown";
+
+  return (
+    <div
+      ref={containerRef}
+      className={cn(
+        "flex flex-col bg-red-500 h-full w-full z-20",
+        isFullscreen ? "fixed inset-0 z-50" : "flex-1"
+      )}
+    >
+      <CallHeader
+        participantName={participantName}
+        duration={duration}
+        isVideoCall={isVideoCall}
+        isFullscreen={isFullscreen}
+        onToggleChat={handleToggleChat}
+        onFullscreen={handleFullscreen}
+        showChat={isChatVisible}
+        callStatus={callState.status}
+      />
+
+      {/* Main Content */}
+      <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col bg-background relative">
+          <CallVideoArea
+            isVideoCall={isVideoCall}
+            participantName={participantName}
+            callState={callState}
+            remoteVideoRef={remoteVideoRef as React.RefObject<HTMLVideoElement>}
+            localVideoRef={localVideoRef as React.RefObject<HTMLVideoElement>}
+          />
+          <CallControls
+            callState={callState}
+            showControls={showControls}
+            onMute={toggleMute}
+            onCamera={toggleCamera}
+            onScreenShare={toggleScreenShare}
+            onEnd={endCall}
+          />
+        </div>
+        {isChatVisible && (
+          <CallChatPanel
+            participantName={participantName}
+            onClose={handleToggleChat}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
