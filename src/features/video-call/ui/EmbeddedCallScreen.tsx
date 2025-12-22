@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useFullscreen } from "./hooks/useFullscreen";
-// Removed unused lucide-react icons
+import { useFullscreen } from "../model/useFullscreen";
 import { CallHeader } from "./CallHeader";
 import { CallVideoArea } from "./CallVideoArea";
 import { CallControls } from "./CallControls";
-import { CallChatPanel } from "./CallChatPanel";
+// import { CallChatPanel } from "./CallChatPanel";
 import { useCall } from "../model/callContext";
 import { cn } from "@/shared";
 
@@ -19,52 +18,29 @@ export function EmbeddedCallScreen({
   onToggleChat,
   showChat = false,
 }: EmbeddedCallScreenProps) {
-  const { callState, endCall, toggleMute, toggleCamera, toggleScreenShare } =
-    useCall();
+  const { callState, endCall, toggleScreenShare } = useCall();
 
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  // const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const [duration, setDuration] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [controlsHidden, setControlsHidden] = useState(false);
   const [internalShowChat, setInternalShowChat] = useState(false);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Controls are visible when not fullscreen, or when controlsHidden is false
-  const {
-    ref: containerRef,
-    isFullscreen,
-    setIsFullscreen,
-    handleFullscreen,
-  } = useFullscreen<HTMLDivElement>();
-  // Use internal state if no external control
+  const showControls = true;
+
+  const { ref, isFullscreen, handleFullscreen } =
+    useFullscreen<HTMLDivElement | null>();
+
   const isChatVisible = onToggleChat ? showChat : internalShowChat;
   const handleToggleChat =
     onToggleChat || (() => setInternalShowChat(!internalShowChat));
 
-  // Update local video stream: use callState.localStream if present, else get webcam for demo
-  useEffect(() => {
-    if (!localVideoRef.current) return;
-    if (callState.localStream) {
-      localVideoRef.current.srcObject = callState.localStream;
-      return;
-    }
-    // For demo: get webcam if not in call
-    navigator.mediaDevices
-      .getUserMedia({ video: false, audio: false })
-      .then((stream) => {
-        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
-      })
-      .catch(() => {});
-  }, [callState.localStream]);
-
-  // Update remote video stream
-  useEffect(() => {
-    if (remoteVideoRef.current && callState.remoteStream) {
-      remoteVideoRef.current.srcObject = callState.remoteStream;
-    }
-  }, [callState.remoteStream]);
+  // // Update remote video stream
+  // useEffect(() => {
+  //   if (remoteVideoRef.current && callState.remoteStream) {
+  //     remoteVideoRef.current.srcObject = callState.remoteStream;
+  //   }
+  // }, [callState.remoteStream]);
 
   // Duration timer
   useEffect(() => {
@@ -115,34 +91,6 @@ export function EmbeddedCallScreen({
     };
   }, [callState.status, isFullscreen]);
 
-  // Toggle fullscreen
-  const handleFullscreen = async () => {
-    if (!containerRef.current) return;
-
-    try {
-      if (!document.fullscreenElement) {
-        await containerRef.current.requestFullscreen();
-        setIsFullscreen(true);
-      } else {
-        await document.exitFullscreen();
-        setIsFullscreen(false);
-      }
-    } catch (err) {
-      console.error("Fullscreen error:", err);
-    }
-  };
-
-  // Listen for fullscreen changes
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () =>
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  }, []);
-
   // if (callState.status !== "connected" && callState.status !== "connecting") {
   //   return null;
   // }
@@ -153,9 +101,9 @@ export function EmbeddedCallScreen({
 
   return (
     <div
-      ref={containerRef}
+      ref={ref}
       className={cn(
-        "flex flex-col bg-red-500 h-full w-full z-20",
+        "flex flex-col bg-error h-full w-full z-20",
         isFullscreen ? "fixed inset-0 z-50" : "flex-1"
       )}
     >
@@ -173,28 +121,21 @@ export function EmbeddedCallScreen({
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 flex flex-col bg-background relative">
-          <CallVideoArea
-            isVideoCall={isVideoCall}
-            participantName={participantName}
-            callState={callState}
-            remoteVideoRef={remoteVideoRef as React.RefObject<HTMLVideoElement>}
-            localVideoRef={localVideoRef as React.RefObject<HTMLVideoElement>}
-          />
+          <CallVideoArea isVideoCall={isVideoCall} />
+
           <CallControls
             callState={callState}
             showControls={showControls}
-            onMute={toggleMute}
-            onCamera={toggleCamera}
             onScreenShare={toggleScreenShare}
             onEnd={endCall}
           />
         </div>
-        {isChatVisible && (
+        {/* {isChatVisible && (
           <CallChatPanel
             participantName={participantName}
             onClose={handleToggleChat}
           />
-        )}
+        )} */}
       </div>
     </div>
   );

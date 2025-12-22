@@ -34,78 +34,7 @@ export async function getUserMedia(
 }
 
 /**
- * Get screen share stream
- */
-export async function getScreenShare(): Promise<MediaStream> {
-  try {
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-      audio: true,
-    });
-    return stream;
-  } catch (error) {
-    console.error("Error accessing screen share:", error);
-    throw error;
-  }
-}
-
-/**
- * Stop all tracks in a media stream
- */
-export function stopMediaStream(stream: MediaStream | null): void {
-  if (stream) {
-    stream.getTracks().forEach((track) => track.stop());
-  }
-}
-
-/**
- * Toggle a specific track type (audio or video)
- */
-export function toggleTrack(
-  stream: MediaStream | null,
-  kind: "audio" | "video",
-  enabled: boolean
-): void {
-  if (!stream) return;
-
-  stream.getTracks().forEach((track) => {
-    if (track.kind === kind) {
-      track.enabled = enabled;
-    }
-  });
-}
-
-/**
- * Replace video track (for screen sharing)
- */
-export async function replaceVideoTrack(
-  peerConnection: RTCPeerConnection,
-  newStream: MediaStream
-): Promise<void> {
-  const videoTrack = newStream.getVideoTracks()[0];
-  const sender = peerConnection
-    .getSenders()
-    .find((s) => s.track?.kind === "video");
-
-  if (sender && videoTrack) {
-    await sender.replaceTrack(videoTrack);
-  }
-}
-
-/**
- * Add local stream tracks to peer connection
- */
-export function addStreamToPeerConnection(
-  peerConnection: RTCPeerConnection,
-  stream: MediaStream
-): void {
-  stream.getTracks().forEach((track) => {
-    peerConnection.addTrack(track, stream);
-  });
-}
-
-/**
- * Create an SDP offer
+ * Create an SDP offer (caller)
  */
 export async function createOffer(
   peerConnection: RTCPeerConnection
@@ -116,7 +45,7 @@ export async function createOffer(
 }
 
 /**
- * Create an SDP answer
+ * Create an SDP answer (receiver)
  */
 export async function createAnswer(
   peerConnection: RTCPeerConnection,
@@ -146,4 +75,76 @@ export async function addIceCandidate(
   candidate: RTCIceCandidateInit
 ): Promise<void> {
   await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+}
+
+/**
+ * Stop all tracks in a media stream
+ */
+export function stopMediaStream(stream: MediaStream | null): void {
+  if (stream) {
+    stream.getTracks().forEach((track) => track.stop());
+  }
+}
+
+/**
+ * Add local stream tracks to peer connection
+ */
+export function addStreamToPeerConnection(
+  peerConnection: RTCPeerConnection,
+  stream: MediaStream
+): void {
+  stream.getTracks().forEach((track) => {
+    peerConnection.addTrack(track, stream);
+  });
+}
+
+/**
+ * Toggle a specific track type (audio or video)
+ */
+export function toggleTrack(
+  stream: MediaStream | null,
+  kind: "audio" | "video",
+  enabled: boolean
+): void {
+  if (!stream) return;
+
+  stream.getTracks().forEach((track) => {
+    if (track.kind === kind) {
+      track.enabled = enabled;
+    }
+  });
+}
+
+/**
+ * Get screen share stream
+ */
+
+export async function getScreenShare(): Promise<MediaStream> {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      audio: true,
+    });
+    return stream;
+  } catch (error) {
+    console.error("Error accessing screen share:", error);
+    throw error;
+  }
+}
+
+/**
+ * Replace video track (for screen sharing)
+ */
+export async function replaceVideoTrack(
+  peerConnection: RTCPeerConnection,
+  newStream: MediaStream
+): Promise<void> {
+  const videoTrack = newStream.getVideoTracks()[0];
+  const sender = peerConnection
+    .getSenders()
+    .find((s) => s.track?.kind === "video");
+
+  if (sender && videoTrack) {
+    await sender.replaceTrack(videoTrack);
+  }
 }

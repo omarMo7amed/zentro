@@ -1,26 +1,26 @@
-import { VideoOff, Monitor } from "lucide-react";
+import { VideoOff, Monitor, MicOff } from "lucide-react";
 
-import { CallState } from "../types";
-import { RefObject } from "react";
+import { cn, getAvatarColor } from "@/shared";
+import useLocalVideoStream from "../model/useLocalVideoStream";
+import useRemoteVideoStream from "../model/useRemoteVideoStream";
+import ShareScreen from "./ShareScreen";
+import { useCall } from "../model/callContext";
 
 interface CallVideoAreaProps {
   isVideoCall: boolean;
-  localVideoRef: RefObject<HTMLVideoElement>;
-  remoteVideoRef: RefObject<HTMLVideoElement>;
-  callState: CallState;
-  participantName: string;
 }
 
-export function CallVideoArea({
-  isVideoCall,
-  localVideoRef,
-  remoteVideoRef,
-  callState,
-  participantName,
-}: CallVideoAreaProps) {
+export function CallVideoArea({ isVideoCall }: CallVideoAreaProps) {
+  const { localVideoRef, isCameraOn, isMuted } = useLocalVideoStream();
+  const { remoteVideoRef } = useRemoteVideoStream();
+  const { callState } = useCall();
+  const participantName = "Participant";
+
+  console.log(callState.isScreenSharing, "screen sharing status");
   return (
     <div className="flex-1 flex flex-col bg-background relative">
       <div className="flex-1 flex items-center justify-center p-2">
+        <ShareScreen />
         {isVideoCall ? (
           <div className="relative w-full h-full">
             {/* Remote Video (Main) */}
@@ -34,7 +34,12 @@ export function CallVideoArea({
               {(!callState.remoteStream ||
                 callState.remoteStream.getVideoTracks().length === 0) && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                  <div
+                    className={cn(
+                      "w-20 h-20 rounded-full bg-linear-to-br  flex items-center justify-center",
+                      getAvatarColor(participantName)
+                    )}
+                  >
                     <span className="text-3xl text-text-primary font-semibold">
                       {participantName.charAt(0).toUpperCase()}
                     </span>
@@ -52,9 +57,16 @@ export function CallVideoArea({
                 muted
                 className="w-full h-full object-cover scale-x-[-1]"
               />
-              {callState.isLocalCameraOff && (
+              {!isCameraOn && (
                 <div className="absolute inset-0 flex items-center justify-center bg-background">
                   <VideoOff className="w-5 h-5 text-text-muted" />
+                </div>
+              )}
+
+              {isMuted && (
+                <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded-md bg-error/20 border border-error/50">
+                  <MicOff className="w-3 h-3 text-error" />
+                  <span className="text-xs text-error">Muted</span>
                 </div>
               )}
             </div>
@@ -69,8 +81,9 @@ export function CallVideoArea({
           </div>
         ) : (
           // Voice call - show avatar only
+
           <div className="flex flex-col items-center gap-4">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-secondary p-1 animate-pulse">
+            <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary to-secondary p-1 animate-pulse">
               <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
                 <span className="text-3xl text-text-primary font-semibold">
                   {participantName.charAt(0).toUpperCase()}

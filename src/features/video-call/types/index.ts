@@ -11,15 +11,43 @@ export interface VideoCallButtonProps {
 }
 
 export type CallStatus =
-  | "idle" // No active call
-  | "outgoing" // Calling someone, waiting for answer
-  | "incoming" // Someone is calling us
-  | "connecting" // Call accepted, establishing WebRTC
-  | "connected" // Call is active
-  | "ended" // Call has ended
-  | "declined" // Call was declined
-  | "missed" // Call wasn't answered
-  | "failed"; // Connection failed
+  | "idle"
+  | "outgoing"
+  | "incoming"
+  | "connecting"
+  | "connected"
+  | "ended"
+  | "declined"
+  | "missed"
+  | "failed";
+
+export type CallAction =
+  | {
+      type: "START_OUTGOING_CALL";
+      payload: {
+        chatId: number;
+        callType: CallType;
+        recipientId: string;
+        recipientName: string;
+      };
+    }
+  | { type: "START_SCREEN_SHARE"; payload: { stream: MediaStream } }
+  | { type: "STOP_SCREEN_SHARE" }
+  | { type: "INCOMING_CALL"; payload: CallRequestPayload }
+  | { type: "CALL_ACCEPTED"; payload: { remoteStream: MediaStream } }
+  | { type: "CALL_DECLINED"; payload: { reason: string } }
+  | { type: "CALL_CONNECTED"; payload: { startTime: Date } }
+  | { type: "CALL_ENDED" }
+  | { type: "CALL_FAILED"; payload: { error: string } }
+  | { type: "SET_LOCAL_STREAM"; payload: { stream: MediaStream } }
+  | { type: "SET_REMOTE_STREAM"; payload: { stream: MediaStream } }
+  | { type: "TOGGLE_MUTE" }
+  | { type: "TOGGLE_CAMERA" }
+  | { type: "RESET" }
+  | {
+      type: "SET_DEMO_STATE";
+      payload: { status: CallStatus; callType: CallType };
+    };
 
 export interface CallParticipant {
   id: string;
@@ -41,6 +69,7 @@ export interface CallState {
   startTime: Date | null;
   localStream: MediaStream | null;
   remoteStream: MediaStream | null;
+  screenStream: MediaStream | null;
   isLocalMuted: boolean;
   isLocalCameraOff: boolean;
   isScreenSharing: boolean;
@@ -83,10 +112,10 @@ export interface CallEndPayload {
 export interface CallContextType {
   callState: CallState;
   startCall: (
-    chatId: number,
-    type: CallType,
-    recipientId: string,
-    recipientName: string
+    // chatId: number,
+    type: CallType
+    // recipientId: string,
+    // recipientName: string
   ) => Promise<void>;
   acceptCall: () => Promise<void>;
   declineCall: (reason?: string) => void;
@@ -110,6 +139,7 @@ export const initialCallState: CallState = {
   startTime: null,
   localStream: null,
   remoteStream: null,
+  screenStream: null,
   isLocalMuted: false,
   isLocalCameraOff: false,
   isScreenSharing: false,

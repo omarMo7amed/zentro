@@ -10,11 +10,11 @@ import {
 import { cn } from "@/shared";
 import { CallState } from "../types";
 
+import { useCall } from "../model/callContext";
+
 interface CallControlsProps {
   showControls: boolean;
   callState: CallState;
-  onMute: () => void;
-  onCamera: () => void;
   onScreenShare: () => void;
   onEnd: () => void;
 }
@@ -22,12 +22,13 @@ interface CallControlsProps {
 export function CallControls({
   showControls,
   callState,
-  onMute,
-  onCamera,
   onScreenShare,
   onEnd,
 }: CallControlsProps) {
   const isVideoCall = callState.type === "video";
+  // const { setOpenInCall, setIsMuted } = useLocalVideoStream();
+  const { toggleMute, toggleCamera, toggleScreenShare } = useCall();
+
   return (
     <div
       className={cn(
@@ -40,7 +41,7 @@ export function CallControls({
       <div className="flex items-center justify-center gap-3">
         {/* Mute */}
         <button
-          onClick={onMute}
+          onClick={toggleMute}
           className={cn(
             "w-11 h-11 rounded-full flex items-center justify-center",
             "transition-all duration-200 transform hover:scale-105 active:scale-95",
@@ -59,7 +60,7 @@ export function CallControls({
         {/* Camera (video calls only) */}
         {isVideoCall && (
           <button
-            onClick={onCamera}
+            onClick={toggleCamera}
             className={cn(
               "w-11 h-11 rounded-full flex items-center justify-center",
               "transition-all duration-200 transform hover:scale-105 active:scale-95",
@@ -79,7 +80,7 @@ export function CallControls({
         {/* Screen Share (video calls only) */}
         {isVideoCall && (
           <button
-            onClick={onScreenShare}
+            onClick={toggleScreenShare}
             className={cn(
               "w-11 h-11 rounded-full flex items-center justify-center",
               "transition-all duration-200 transform hover:scale-105 active:scale-95",

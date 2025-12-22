@@ -22,7 +22,7 @@ export default function Page() {
   //   (callState.status === "connected" || callState.status === "connecting") &&
   //   callState.chatId === selectedChatId;
 
-  const isInCall = callState.status == "incoming";
+  const isInCall = callState.status == "connected";
   return (
     <div className="h-full flex bg-background">
       {/* Main content area - ChatHeader + ChatArea get replaced when in call */}

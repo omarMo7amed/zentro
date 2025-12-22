@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export function useFullscreen<T extends HTMLElement>() {
+export function useFullscreen<T extends HTMLElement | null>() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const ref = useRef<T | null>(null);
 
@@ -15,7 +15,6 @@ export function useFullscreen<T extends HTMLElement>() {
         setIsFullscreen(false);
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error("Fullscreen error:", err);
     }
   }, []);
